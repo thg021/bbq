@@ -18,6 +18,5 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background-image: url("/img/hero.svg");
-  background-color: var(--background-rgb);
+  background-color:  var(--background-rgb);
 }
