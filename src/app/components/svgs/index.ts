@@ -1,0 +1,6 @@
+export { default as Bbq } from "./bbq.svg"
+export { default as Heron } from "./hero.svg"
+export { default as People } from "./people.svg"
+export { default as Money } from "./money.svg"
+export { default as Logo } from "./logo.svg"
+export { default as Beer } from "./beer.svg"
