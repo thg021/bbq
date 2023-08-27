@@ -4,6 +4,7 @@ import { ReactNode } from "react"
 import { Footer } from "../components/Footer"
 import { Header } from "../components/Header"
 import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 interface LayoutPageProps {
   children: ReactNode
@@ -11,8 +12,20 @@ interface LayoutPageProps {
 
 export default function LayoutAuthPage({ children }: LayoutPageProps) {
   const { data: session, status } = useSession()
-
+  const router = useRouter()
   console.log("data", session, status)
+
+  if (status === "loading") {
+    return null
+  }
+
+  if (!session) {
+    setTimeout(() => {
+      router.push("/login")
+    }, 100)
+
+    return null
+  }
 
   return (
     <>
