@@ -1,5 +1,5 @@
 import { Footer } from "./components/Footer"
-import { Input } from "./components/Input"
+import { LoginForm } from "./components/LoginForm"
 
 export default function Home() {
   return (
@@ -10,19 +10,7 @@ export default function Home() {
         </h1>
       </header>
       <div className="w-full flex-1 flex justify-center bg-gradient-to-t from-[--background-rgb] from-60% to-transparent">
-        <form className="flex flex-col gap-6  lg:w-96 px-6 ">
-          <Input name="email" type="email" placeholder="e-mail" label="Login" />
-          <Input
-            name="password"
-            type="password"
-            placeholder="Senha"
-            label="senha"
-          />
-
-          <button className="bg-zinc-900 px-2 py-3 mt-10 rounded-2xl font-bold text-zinc-100">
-            Entrar
-          </button>
-        </form>
+        <LoginForm />
       </div>
       <Footer bg />
     </main>
