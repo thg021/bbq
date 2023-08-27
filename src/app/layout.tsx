@@ -1,6 +1,7 @@
 import "./globals.css"
 import type { Metadata } from "next"
 import { Raleway } from "next/font/google"
+import AuthProvider from "./components/AuthProvider"
 
 const raleway = Raleway({ subsets: ["latin"] })
 
@@ -16,9 +17,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={raleway.className} suppressHydrationWarning={true}>
-        <div className="flex min-h-screen flex-col">{children}</div>
-      </body>
+      <AuthProvider>
+        <body className={raleway.className} suppressHydrationWarning={true}>
+          <div className="flex min-h-screen flex-col">{children}</div>
+        </body>
+      </AuthProvider>
     </html>
   )
 }

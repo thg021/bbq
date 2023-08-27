@@ -4,6 +4,9 @@ import { useForm } from "react-hook-form"
 import { Input } from "../Input"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { api } from "../../../../lib/axios"
+import { AxiosError } from "axios"
+import { useRouter } from "next/navigation"
 
 const LoginFormSchema = z.object({
   email: z.string().email({ message: "Digite um email válido." }),
@@ -13,16 +16,29 @@ const LoginFormSchema = z.object({
 type LoginFormData = z.infer<typeof LoginFormSchema>
 
 export function LoginForm() {
+  const router = useRouter()
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors }
   } = useForm<LoginFormData>({
     resolver: zodResolver(LoginFormSchema)
   })
 
   async function handleLogin(data: LoginFormData) {
-    console.log(data)
+    try {
+      await api.post("/auth/register", {
+        email: data.email,
+        password: data.password
+      })
+      reset()
+      router.push("/login")
+    } catch (error) {
+      if (error instanceof AxiosError && error.response?.data?.message) {
+        alert("Error: " + error.response?.data?.message)
+      }
+    }
   }
 
   return (
