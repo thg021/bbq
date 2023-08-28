@@ -4,13 +4,15 @@ import { Input } from "@/app/components/Input"
 import { Bbq } from "@/app/components/svgs"
 import * as Dialog from "@radix-ui/react-dialog"
 import * as Switch from "@radix-ui/react-switch"
-import { useQuery } from "@tanstack/react-query"
-import { useState } from "react"
-import { Controller, useForm } from "react-hook-form"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { Controller, useForm, useFieldArray } from "react-hook-form"
 import { api } from "../../../../lib/axios"
 import { useSession } from "next-auth/react"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useState } from "react"
 
-interface ParticipantProps {
+export interface ParticipantProps {
   name: string
   drink: boolean
 }
@@ -31,39 +33,77 @@ export interface ScheduleProps {
   participants: Participant[]
 }
 
+const createEventFormSchema = z.object({
+  title: z.string().nonempty("O titulo do evento é obrigatório!").toLowerCase(),
+  date: z.string().nonempty("A data do evento é obrigatório."),
+
+  participants: z.array(
+    z.object({
+      participant: z.string().nonempty("O nome é obrigatório."),
+      drink: z.boolean()
+    })
+  )
+})
+
+type CreateEventFormSchema = z.infer<typeof createEventFormSchema>
+type EventRequest = CreateEventFormSchema & {
+  email: string
+}
+
 export default function Schedule() {
-  const [participants, setParticipants] = useState<ParticipantProps[]>([])
-  const { register, control, reset, watch, resetField, setFocus } = useForm()
+  const [open, setOpen] = useState(false)
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<CreateEventFormSchema>({
+    resolver: zodResolver(createEventFormSchema)
+  })
+
+  const { fields, append } = useFieldArray({
+    name: "participants",
+    control
+  })
+
   const { data: session } = useSession()
   const user = session?.user
 
   const { data: schedules } = useQuery<ScheduleProps[]>(
-    ["schedule"],
+    ["schedules"],
     async () => {
-      const { data } = await api.get(`/schedules/${user?.email}`)
-      console.log(data)
+      const { data } = await api.get("/schedules", {
+        params: { email: user?.email }
+      })
       return data.schedules ?? []
     }
   )
 
-  console.log("MEus dados", schedules)
-
-  function handleAddParticipant() {
-    const [name, drink] = watch(["name", "drink"])
-    if (name) {
-      setParticipants((oldState) => [...oldState, { name, drink }])
-      resetField("name")
-      setFocus("name")
-    }
-
-    reset()
+  function onAddNewParticipant() {
+    append({ participant: "", drink: false })
   }
 
-  function handleAddEvent() {
-    const [title, date] = watch(["title", "date"])
-    if (title && date) {
-      console.log({ title, date, participants })
+  // async function addSchedule(event: CreateEventFormSchema) {
+  //   return await api.post(`/schedules`, event)
+  // }
+
+  const queryClient = useQueryClient()
+
+  const { mutateAsync } = useMutation(
+    async (event: EventRequest) => {
+      await api.post(`/schedules`, event)
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["schedules"])
+      }
     }
+  )
+
+  function handleAddEvent(data: CreateEventFormSchema) {
+    const email = user!.email
+    mutateAsync({ ...data, email })
+    setOpen(false)
   }
 
   return (
@@ -75,7 +115,7 @@ export default function Schedule() {
               <Card key={schedule.id} schedule={schedule} />
             ))}
 
-          <Dialog.Root>
+          <Dialog.Root onOpenChange={setOpen} open={open}>
             <Dialog.Trigger asChild>
               <div className="flex flex-col justify-center items-center gap-2 bg-slate-100 shadow-md p-6 h-48 cursor-pointer hover:bg-yellow-400 group transform transition duration-500 hover:scale-105">
                 <Bbq />
@@ -84,7 +124,7 @@ export default function Schedule() {
             </Dialog.Trigger>
             <Dialog.Portal>
               <Dialog.Overlay className="fixed inset-0 bg-black/50" />
-              <Dialog.Content className="fixed w-1/2 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md bg-white p-8 text-gray-900 shadow-md">
+              <Dialog.Content className="fixed w-full sm:h-screen md:h-auto lg:w-1/2 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md bg-white p-8 text-gray-900 shadow-md">
                 <div className="flex w-full justify-between items-center">
                   <h2 className="font-bold text-xl">
                     Adicionar novo encontro:
@@ -94,109 +134,78 @@ export default function Schedule() {
                   </Dialog.Close>
                 </div>
 
-                <div className="flex flex-col mt-8">
+                <form
+                  onSubmit={handleSubmit(handleAddEvent)}
+                  className="flex flex-col mt-8"
+                >
                   <Input
                     label="Titulo"
                     className="border border-slate-200"
                     {...register("title")}
                   />
+                  {errors.title && <span>{errors.title.message}</span>}
                   <Input
+                    type="date"
                     label="Data do evento"
                     className="border border-slate-200"
                     {...register("date")}
                   />
-                  <h2 className="font-bold text-xl my-4">
-                    Adicionar participante
-                  </h2>
-                  {
-                    // add participants
-                  }
-                  <div className="w-full flex items-center justify-between gap-6">
-                    <div className="flex-1">
-                      <Input
-                        className="flex-1 border border-slate-200"
-                        {...register("name")}
-                      />
-                    </div>
-
-                    <Controller
-                      render={({ field: { onChange, value, name, ref } }) => {
-                        console.log(value, name, onChange)
-                        return (
-                          <div
-                            style={{ display: "flex", alignItems: "center" }}
-                          >
-                            <label
-                              className="Label"
-                              htmlFor="drink"
-                              style={{ paddingRight: 15 }}
-                            >
-                              Bebida Alcoolica
-                            </label>
-                            <Switch.Root
-                              className="w-12 h-7 rounded-full bg-slate-200 shadow-lg focus:shadow-xl data-[state='checked']:bg-yellow-400"
-                              id="drink"
-                              checked={value}
-                              onCheckedChange={onChange}
-                              ref={ref}
-                            >
-                              <Switch.Thumb className="block w-5 h-5 bg-white rounded-full shadow-lg  transition-transform duration-100 transform translate-x-1  will-change-transform data-[state='checked']:transform data-[state='checked']:translate-x-6" />
-                            </Switch.Root>
-                          </div>
-                        )
-                      }}
-                      name="drink"
-                      control={control}
-                      defaultValue={false}
-                    />
+                  <div className="my-8 flex items-center justify-between">
+                    <h2 className="font-bold text-xl my-4">
+                      Adicionar participante
+                    </h2>
 
                     <button
-                      onClick={handleAddParticipant}
-                      className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 buttontext-black font-bold hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
+                      onClick={onAddNewParticipant}
+                      className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-black font-bold hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
                     >
                       <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-                      <span className="relative">Adicionar</span>
+                      <span className="relative">Adicionar novo</span>
                     </button>
                   </div>
+                  {fields.length > 0 && (
+                    <span className="font-bold text-right">
+                      bebida alcoolica?
+                    </span>
+                  )}
 
-                  <table className="my-10 w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
-                    <thead className="py-6 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                      <tr>
-                        <th scope="col" className="px-6 py-3">
-                          Participante
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                          Bebida
-                        </th>
-                        <th scope="col" className="px-6 py-3"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {participants.map((participant, index) => {
-                        return (
-                          <tr
-                            key={index}
-                            className="bg-white border-b dark:bg-gray-800 border-yellow-400"
-                          >
-                            <td
-                              scope="row"
-                              className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                            >
-                              {participant.name}
-                            </td>
-                            <td className="px-6 py-4">
-                              {participant.drink ? "Sim" : "Não"}
-                            </td>
-                            <td className="px-6 py-4"> Excluir</td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
+                  {fields.map((field, index) => {
+                    return (
+                      <div
+                        key={field.id}
+                        className="my-2 flex items-center justify-between gap-4"
+                      >
+                        <div className="flex-1">
+                          <Input
+                            className="border border-slate-200"
+                            {...register(`participants.${index}.participant`)}
+                          />
+                        </div>
 
-                  <div className="self-end flex gap-6">
+                        <Controller
+                          render={({ field: { onChange, value, ref } }) => {
+                            return (
+                              <Switch.Root
+                                className="ml-6 w-12 h-7 rounded-full bg-slate-200 shadow-lg focus:shadow-xl data-[state='checked']:bg-yellow-400"
+                                id={`participants.${index}.drink`}
+                                checked={value}
+                                onCheckedChange={onChange}
+                                ref={ref}
+                              >
+                                <Switch.Thumb className="block w-5 h-5 bg-white rounded-full shadow-lg  transition-transform duration-100 transform translate-x-1  will-change-transform data-[state='checked']:transform data-[state='checked']:translate-x-6" />
+                              </Switch.Root>
+                            )
+                          }}
+                          name={`participants.${index}.drink`}
+                          control={control}
+                        />
+                      </div>
+                    )
+                  })}
+
+                  <div className="self-end flex gap-4 mt-4">
                     <button
-                      onClick={handleAddEvent}
+                      type="submit"
                       className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-black font-bold hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
                     >
                       <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
@@ -209,7 +218,7 @@ export default function Schedule() {
                       </button>
                     </Dialog.Close>
                   </div>
-                </div>
+                </form>
               </Dialog.Content>
             </Dialog.Portal>
           </Dialog.Root>

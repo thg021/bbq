@@ -13,7 +13,6 @@ interface LayoutPageProps {
 export default function LayoutAuthPage({ children }: LayoutPageProps) {
   const { data: session, status } = useSession()
   const router = useRouter()
-  console.log("data", session, status)
 
   if (status === "loading") {
     return null

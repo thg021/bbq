@@ -11,6 +11,7 @@ const options = NextAuth({
       name: "Credentials",
       id: "Credentials",
       credentials: {
+        id: { label: "id", type: "string" },
         email: { label: "email", type: "text" },
         password: { label: "Password", type: "password" }
       },
@@ -20,8 +21,6 @@ const options = NextAuth({
             email: credentials!.email
           }
         })
-
-        console.log("cheguei aquiiii", user)
         // Add logic here to look up the user from the credentials supplied
         if (!user) {
           return null

@@ -1,4 +1,6 @@
-export interface CheckboxProps {
+import { InputHTMLAttributes } from "react"
+
+export type CheckboxProps = InputHTMLAttributes<HTMLInputElement> & {
   disabled?: boolean
   defaultChecked?: boolean
   id: string

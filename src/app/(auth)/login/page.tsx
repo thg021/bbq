@@ -29,10 +29,8 @@ export default function Login() {
   })
 
   async function handleLogin(data: LoginFormData) {
-    console.log("handleLogin", data)
     try {
       signIn("Credentials", { ...data, redirect: false }).then((data) => {
-        console.log("aquiii", data)
         if (!data?.error) {
           router.push("/schedule")
         }
