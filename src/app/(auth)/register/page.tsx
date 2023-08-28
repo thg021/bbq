@@ -1,3 +1,4 @@
+"use client"
 import { useRouter } from "next/navigation"
 import { Footer } from "../../components/Footer"
 import { useForm } from "react-hook-form"

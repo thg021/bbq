@@ -4,21 +4,56 @@ import { Input } from "@/app/components/Input"
 import { Bbq } from "@/app/components/svgs"
 import * as Dialog from "@radix-ui/react-dialog"
 import * as Switch from "@radix-ui/react-switch"
-import { useEffect, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
+import { api } from "../../../../lib/axios"
+import { useSession } from "next-auth/react"
 
 interface ParticipantProps {
   name: string
   drink: boolean
 }
 
+export interface Participant {
+  id: string
+  name: string
+  drink: boolean
+  created_at: string
+}
+
+export interface ScheduleProps {
+  id: string
+  title: string
+  event_date: string
+  created_at: string
+  user_id: string
+  participants: Participant[]
+}
+
 export default function Schedule() {
   const [participants, setParticipants] = useState<ParticipantProps[]>([])
-  const { handleSubmit, register, control, reset, watch } = useForm()
+  const { register, control, reset, watch, resetField, setFocus } = useForm()
+  const { data: session } = useSession()
+  const user = session?.user
+
+  const { data: schedules } = useQuery<ScheduleProps[]>(
+    ["schedule"],
+    async () => {
+      const { data } = await api.get(`/schedules/${user?.email}`)
+      console.log(data)
+      return data.schedules ?? []
+    }
+  )
+
+  console.log("MEus dados", schedules)
+
   function handleAddParticipant() {
     const [name, drink] = watch(["name", "drink"])
     if (name) {
       setParticipants((oldState) => [...oldState, { name, drink }])
+      resetField("name")
+      setFocus("name")
     }
 
     reset()
@@ -34,8 +69,11 @@ export default function Schedule() {
   return (
     <main className="w-full flex-1 flex justify-start items-center flex-col bg-slate-100">
       <div className="w-full lg:w-[64rem] flex-1 mt-[-3rem]">
-        <section className="grid grid-cols-2 lg:grid-cols-3 grid-rows-1 gap-4 px-4">
-          <Card />
+        <section className="grid grid-cols-1 lg:grid-cols-3 grid-rows-1 gap-4 px-4">
+          {schedules &&
+            schedules.map((schedule) => (
+              <Card key={schedule.id} schedule={schedule} />
+            ))}
 
           <Dialog.Root>
             <Dialog.Trigger asChild>

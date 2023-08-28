@@ -4,6 +4,7 @@
 
 import { Checkbox } from "@/app/components/Checkbox"
 import { Money, People, Beer } from "@/app/components/svgs"
+import { useParams } from "next/navigation"
 
 export default function Details() {
   return (
