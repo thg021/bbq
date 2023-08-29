@@ -1,5 +1,5 @@
 import { NextResponse as res } from "next/server"
-import { prisma } from "../../../../../lib/prisma"
+import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 export async function GET() {
   return res.json({ hello: "world" })

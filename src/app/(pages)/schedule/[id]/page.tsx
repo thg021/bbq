@@ -1,10 +1,10 @@
 "use client"
-import { Checkbox } from "@/app/components/Checkbox"
-import { Money, People, Beer } from "@/app/components/svgs"
+import { Checkbox } from "@/components/Checkbox"
+import { Money, People, Beer } from "@/components/svgs"
 import { useParams } from "next/navigation"
 import { Participant, ScheduleProps } from "../page"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { api } from "../../../../../lib/axios"
+import { api } from "@/lib/axios"
 
 export default function Details() {
   const { id: idSchedule } = useParams()

@@ -1,12 +1,12 @@
 "use client"
 import { useRouter } from "next/navigation"
-import { Footer } from "../../components/Footer"
+import { Footer } from "@/components/Footer"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { api } from "../../../../lib/axios"
+import { api } from "@/lib/axios"
 import { AxiosError } from "axios"
-import { Input } from "@/app/components/Input"
+import { Input } from "@/components/Input"
 
 const LoginFormSchema = z.object({
   email: z.string().email({ message: "Digite um email válido." }),

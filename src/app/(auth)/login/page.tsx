@@ -1,11 +1,11 @@
 "use client"
 import { useRouter } from "next/navigation"
-import { Footer } from "../../components/Footer"
+import { Footer } from "@/components/Footer"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { AxiosError } from "axios"
-import { Input } from "@/app/components/Input"
+import { Input } from "@/components/Input"
 import { signIn } from "next-auth/react"
 import Link from "next/link"
 

@@ -1,8 +1,8 @@
 "use client"
 
 import { ReactNode } from "react"
-import { Footer } from "../components/Footer"
-import { Header } from "../components/Header"
+import { Footer } from "@/components/Footer"
+import { Header } from "@/components/Header"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 
