@@ -1,8 +1,8 @@
 import "./globals.css"
 import type { Metadata } from "next"
 import { Raleway } from "next/font/google"
-import AuthProvider from "../components/AuthProvider"
-import ReactQueryProvider from "../components/ReactQueryProvider"
+import AuthProvider from "@/providers/AuthProvider"
+import ReactQueryProvider from "@/providers/ReactQueryProvider"
 
 const raleway = Raleway({ subsets: ["latin"] })
 
