@@ -36,7 +36,11 @@ export async function GET(req: Request) {
         : participant.contribution_value
     })),
     totalContribution: schedule.participants.reduce(
-      (total, participant) => total + participant.contribution_value,
+      (total, participant) =>
+        total +
+        (participant.drink
+          ? participant.contribution_value * 1.2 // Aumenta em 20% se drink for true
+          : participant.contribution_value),
       0
     )
   }))

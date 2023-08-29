@@ -60,6 +60,7 @@ export default function Schedule() {
     register,
     control,
     handleSubmit,
+    reset,
     formState: { errors }
   } = useForm<CreateEventFormSchema>({
     resolver: zodResolver(createEventFormSchema)
@@ -79,7 +80,6 @@ export default function Schedule() {
       const { data } = await api.get("/schedules", {
         params: { email: user?.email }
       })
-      console.log("data: " + JSON.stringify(data))
       return data.schedules ?? []
     }
   )
@@ -100,16 +100,17 @@ export default function Schedule() {
     },
     {
       onSuccess: () => {
+        alert("OK")
         queryClient.invalidateQueries(["schedules"])
+        setOpen(false)
+        reset()
       }
     }
   )
 
   function handleAddEvent(data: CreateEventFormSchema) {
-    console.log(data)
     const email = user!.email
     mutateAsync({ ...data, email })
-    setOpen(false)
   }
 
   return (
