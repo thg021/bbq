@@ -22,12 +22,14 @@ model User {
 }
 
 model Participant {
-  id          String   @id @default(uuid())
-  schedule_id String
-  name        String
-  drink       Boolean
-  created_at  DateTime @default(now())
-  schedule    Schedule @relation(fields: [schedule_id], references: [id], onDelete: Cascade)
+  id                 String   @id @default(uuid())
+  schedule_id        String
+  name               String
+  drink              Boolean  @default(false)
+  paid               Boolean  @default(false)
+  contribution_value Int
+  created_at         DateTime @default(now())
+  schedule           Schedule @relation(fields: [schedule_id], references: [id], onDelete: Cascade)
 
   @@map("participants")
 }

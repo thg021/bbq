@@ -21,6 +21,8 @@ export interface Participant {
   id: string
   name: string
   drink: boolean
+  contribution_value: number
+  paid: boolean
   created_at: string
 }
 
@@ -30,6 +32,7 @@ export interface ScheduleProps {
   event_date: string
   created_at: string
   user_id: string
+  totalContribution: number
   participants: Participant[]
 }
 
@@ -40,6 +43,7 @@ const createEventFormSchema = z.object({
   participants: z.array(
     z.object({
       participant: z.string().nonempty("O nome é obrigatório."),
+      contribuition_value: z.string(),
       drink: z.boolean()
     })
   )
@@ -75,12 +79,13 @@ export default function Schedule() {
       const { data } = await api.get("/schedules", {
         params: { email: user?.email }
       })
+      console.log("data: " + JSON.stringify(data))
       return data.schedules ?? []
     }
   )
 
   function onAddNewParticipant() {
-    append({ participant: "", drink: false })
+    append({ participant: "", drink: false, contribuition_value: "" })
   }
 
   // async function addSchedule(event: CreateEventFormSchema) {
@@ -101,6 +106,7 @@ export default function Schedule() {
   )
 
   function handleAddEvent(data: CreateEventFormSchema) {
+    console.log(data)
     const email = user!.email
     mutateAsync({ ...data, email })
     setOpen(false)
@@ -178,7 +184,17 @@ export default function Schedule() {
                         <div className="flex-1">
                           <Input
                             className="border border-slate-200"
+                            placeholder="Nome do participante"
                             {...register(`participants.${index}.participant`)}
+                          />
+                        </div>
+                        <div>
+                          <Input
+                            className="border border-slate-200"
+                            placeholder="Valor de contribuição"
+                            {...register(
+                              `participants.${index}.contribuition_value`
+                            )}
                           />
                         </div>
 

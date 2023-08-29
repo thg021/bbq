@@ -4,10 +4,9 @@ import { Footer } from "../../components/Footer"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { api } from "../../../../lib/axios"
 import { AxiosError } from "axios"
 import { Input } from "@/app/components/Input"
-import { SignInResponse, signIn } from "next-auth/react"
+import { signIn } from "next-auth/react"
 import Link from "next/link"
 
 const LoginFormSchema = z.object({
@@ -40,6 +39,7 @@ export default function Login() {
 
       reset()
     } catch (error) {
+      console.log(error)
       if (error instanceof AxiosError && error.response?.data?.message) {
         alert("Error: " + error.response?.data?.message)
       }
@@ -53,7 +53,7 @@ export default function Login() {
           Agenda de Churras
         </h1>
       </header>
-      <div className="w-full flex-1 flex justify-center bg-gradient-to-t from-[--background-rgb] from-60% to-transparent">
+      <div className="w-full flex-1 flex flex-col items-center justify-center bg-gradient-to-t from-[--background-rgb] from-60% to-transparent">
         <form
           className="flex flex-col gap-6  lg:w-96 px-6 "
           onSubmit={handleSubmit(handleLogin)}

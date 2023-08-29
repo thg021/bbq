@@ -5,7 +5,7 @@ export async function GET(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const schedules = await prisma.schedule.findFirst({
+  const schedulesData = await prisma.schedule.findFirst({
     where: {
       id: params.id
     },
@@ -13,6 +13,20 @@ export async function GET(
       participants: true
     }
   })
+
+  const schedules = {
+    ...schedulesData,
+    participants: schedulesData?.participants.map((participant) => ({
+      ...participant,
+      contribution_value: participant.drink
+        ? participant.contribution_value * 1.2 // Aumenta em 20% se drink for true
+        : participant.contribution_value
+    })),
+    totalContribution: schedulesData?.participants.reduce(
+      (total, participant) => total + participant.contribution_value,
+      0
+    )
+  }
 
   return res.json(schedules)
 }

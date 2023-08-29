@@ -16,6 +16,14 @@ export function Card({ schedule }: CardProps) {
     return formatter.format(date)
   }
 
+  function numberFormatter(value: number) {
+    const numberFormatter = new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    })
+    return numberFormatter.format(value)
+  }
+
   return (
     <Link
       href={`/schedule/${schedule.id}`}
@@ -34,7 +42,7 @@ export function Card({ schedule }: CardProps) {
 
         <div className="flex justify-center items-center gap-3">
           <Money className="group-hover:fill-black transition duration-500" />
-          <span>R$ 140,00</span>
+          <span>{numberFormatter(schedule.totalContribution)}</span>
         </div>
       </footer>
     </Link>

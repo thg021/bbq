@@ -8,7 +8,6 @@ export async function GET(req: Request) {
   if (!email) {
     return res.json({ status: 400 })
   }
-  console.log("aquuiiiii ", email)
   const user = await prisma.user.findUnique({
     where: {
       email
@@ -19,7 +18,7 @@ export async function GET(req: Request) {
     return res.json({ message: "User does not exist." }, { status: 400 })
   }
 
-  const schedules = await prisma.schedule.findMany({
+  const schedulesData = await prisma.schedule.findMany({
     where: {
       user_id: user.id
     },
@@ -27,6 +26,20 @@ export async function GET(req: Request) {
       participants: true
     }
   })
+
+  const schedules = schedulesData.map((schedule) => ({
+    ...schedule,
+    participants: schedule.participants.map((participant) => ({
+      ...participant,
+      contribution_value: participant.drink
+        ? participant.contribution_value * 1.2 // Aumenta em 20% se drink for true
+        : participant.contribution_value
+    })),
+    totalContribution: schedule.participants.reduce(
+      (total, participant) => total + participant.contribution_value,
+      0
+    )
+  }))
 
   return res.json({ schedules })
 }
@@ -42,6 +55,7 @@ export async function POST(req: Request) {
       participants: z.array(
         z.object({
           participant: z.string().nonempty(),
+          contribuition_value: z.string(),
           drink: z.boolean()
         })
       )
@@ -67,7 +81,8 @@ export async function POST(req: Request) {
         participants: {
           create: participants.map((participant) => ({
             name: participant.participant,
-            drink: participant.drink
+            drink: participant.drink,
+            contribution_value: Number(participant.contribuition_value)
           }))
         }
       }

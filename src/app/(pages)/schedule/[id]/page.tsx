@@ -8,7 +8,6 @@ import { api } from "../../../../../lib/axios"
 
 export default function Details() {
   const { id } = useParams()
-  console.log(id)
 
   const { data: schedule } = useQuery<ScheduleProps>(
     ["schedule", id],
@@ -40,27 +39,31 @@ export default function Details() {
 
               <div className="flex justify-center items-center gap-3">
                 <Money />
-                <span className="font-medium text-[1.312rem]">R$ 140,00</span>
+                <span className="font-medium text-[1.312rem]">
+                  {schedule?.totalContribution}
+                </span>
               </div>
             </div>
           </header>
           <div className="mt-16 mb-14">
             <ul className="w-full">
-              {schedule?.participants.map((participant) => (
-                <li
-                  key={participant.id}
-                  className="flex items-center justify-between py-3 border-b-2 border-[#E5C231]"
-                >
-                  <Checkbox id="1" label="teste" />
-                  {participant.drink && <Beer className="w-6 h-6" />}
-                  <span
-                    data-paid="false"
-                    className="font-bold text-xl data-[paid=true]:line-through "
+              {schedule?.participants.map((participant) => {
+                return (
+                  <li
+                    key={participant.id}
+                    className="flex items-center justify-between py-3 border-b-2 border-[#E5C231]"
                   >
-                    R$ 20,00
-                  </span>
-                </li>
-              ))}
+                    <Checkbox id="1" label="teste" />
+                    {participant.drink && <Beer className="w-6 h-6" />}
+                    <span
+                      data-paid={participant.paid}
+                      className="font-bold text-xl data-[paid=true]:line-through "
+                    >
+                      {participant.contribution_value.toFixed(2)}
+                    </span>
+                  </li>
+                )
+              })}
             </ul>
           </div>
         </div>
