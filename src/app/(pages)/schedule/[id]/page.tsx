@@ -6,6 +6,8 @@ import { queryClient } from "@/lib/react-query"
 import { ISchedule, IParticipant } from "../types"
 import { Header } from "./components/Header"
 import { User } from "./components/User"
+import { FormAddParticipant } from "./components/FormAddParticipant"
+import Link from "next/link"
 
 export default function Details() {
   const { id: idSchedule } = useParams()
@@ -27,7 +29,7 @@ export default function Details() {
         ...participant,
         paid: !participant.paid
       }
-      await api.post(
+      await api.put(
         `/schedules/${idSchedule}/participants/${participant.id}`,
         updatedParticipant
       )
@@ -46,13 +48,17 @@ export default function Details() {
 
   return (
     <section className="flex flex-col bg-white shadow-md p-6 mx-4">
+      <div className="flex justify-between items-center mb-8">
+        <Link href="/schedule">voltar</Link>
+        <span>deletar</span>
+      </div>
       {!schedule ? (
         <div>nao tem nada ainda</div>
       ) : (
         <>
           <Header schedule={schedule} />
           <div className="mt-16 mb-14">
-            <ul className="w-full">
+            <ul className="w-full my-4">
               {schedule.participants.map((participant) => {
                 return (
                   <User
@@ -63,6 +69,7 @@ export default function Details() {
                 )
               })}
             </ul>
+            <FormAddParticipant />
           </div>
         </>
       )}

@@ -26,7 +26,12 @@ const createEventFormSchema = z.object({
   participants: z.array(
     z.object({
       participant: z.string().nonempty("O nome é obrigatório."),
-      contribuition_value: z.string(),
+      contribution_value: z
+        .string()
+        .refine((value) => /^(\d+([\\,|\\.]\d{1,2})?)?$/.test(value), {
+          message: "Favor informar um valor correto."
+        })
+        .transform((value) => parseFloat(value.replace(",", "."))),
       drink: z.boolean()
     })
   )
@@ -61,7 +66,7 @@ export function Modal({ user }: ModalProps) {
   })
 
   function onAddNewParticipant() {
-    append({ participant: "", drink: false, contribuition_value: "" })
+    append({ participant: "", drink: false, contribution_value: 0 })
   }
 
   const { mutateAsync } = useMutation(
@@ -146,7 +151,7 @@ export function Modal({ user }: ModalProps) {
                     <Input
                       className="border border-slate-200"
                       placeholder="Valor de contribuição"
-                      {...register(`participants.${index}.contribuition_value`)}
+                      {...register(`participants.${index}.contribution_value`)}
                     />
                   </div>
 

@@ -18,9 +18,9 @@ export type ButtonProps = ComponentProps<"button"> &
     text: string
   }
 
-export function Button({ text, variant, ...rest }: ButtonProps) {
+export function Button({ text, variant, className, ...rest }: ButtonProps) {
   return (
-    <button type="submit" className={button({ variant })} {...rest}>
+    <button type="submit" className={button({ variant, className })} {...rest}>
       <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
       <span className="relative">{text}</span>
     </button>

@@ -1,10 +1,10 @@
 export interface IParticipant {
-  id: string
+  id?: string
   name: string
   drink: boolean
   contribution_value: number
-  paid: boolean
-  created_at: string
+  paid?: boolean
+  created_at?: string
 }
 
 export interface ISchedule {

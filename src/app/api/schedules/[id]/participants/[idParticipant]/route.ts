@@ -1,10 +1,9 @@
 import { prisma } from "@/lib/prisma"
 import { NextResponse as res } from "next/server"
 
-export async function POST(req: Request) {
+export async function PUT(req: Request) {
   const body = await req.json()
 
-  console.log(body)
   await prisma.participant.update({
     where: {
       id: body.id,
