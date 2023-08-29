@@ -1,6 +1,21 @@
 import { prisma } from "@/lib/prisma"
 import { NextResponse as res } from "next/server"
 
+export async function DELETE(
+  req: Request,
+  { params }: { params: { idParticipant: string; id: string } }
+) {
+  console.log(params)
+  await prisma.participant.delete({
+    where: {
+      id: params.idParticipant,
+      schedule_id: params.id
+    }
+  })
+
+  return res.json({ message: "ok" })
+}
+
 export async function PUT(req: Request) {
   const body = await req.json()
 

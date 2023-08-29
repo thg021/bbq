@@ -46,6 +46,22 @@ export default function Details() {
     updateStatusParticipant(participant)
   }
 
+  const { mutateAsync: deleteParticipant } = useMutation(
+    async (participantId: string) => {
+      await api.delete(`/schedules/${idSchedule}/participants/${participantId}`)
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["schedules"])
+        queryClient.invalidateQueries(["schedule", idSchedule])
+      }
+    }
+  )
+
+  function handleDeleteParticipant(participantId: string) {
+    deleteParticipant(participantId)
+  }
+
   return (
     <section className="flex flex-col bg-white shadow-md p-6 mx-4">
       <div className="flex justify-between items-center mb-8">
@@ -65,6 +81,7 @@ export default function Details() {
                     key={participant.id}
                     participant={participant}
                     onPayment={handlePayment}
+                    onDelete={handleDeleteParticipant}
                   />
                 )
               })}
