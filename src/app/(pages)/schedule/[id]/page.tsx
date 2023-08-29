@@ -2,16 +2,16 @@
 import { Checkbox } from "@/components/Checkbox"
 import { Money, People, Beer } from "@/components/svgs"
 import { useParams } from "next/navigation"
-import { Participant, ScheduleProps } from "../page"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { api } from "@/lib/axios"
 import { formatCurrency, formatDateToDDMM } from "@/utils/formatter"
 import { queryClient } from "@/lib/react-query"
+import { ISchedule, IParticipant } from "../types"
 
 export default function Details() {
   const { id: idSchedule } = useParams()
 
-  const { data: schedule } = useQuery<ScheduleProps>(
+  const { data: schedule } = useQuery<ISchedule>(
     ["schedule", idSchedule],
     async () => {
       const { data } = await api.get(`/schedules/${idSchedule}`, {
@@ -23,8 +23,8 @@ export default function Details() {
   )
 
   const { mutateAsync: updateStatusParticipant } = useMutation(
-    async (participant: Participant) => {
-      const updatedParticipant: Participant = {
+    async (participant: IParticipant) => {
+      const updatedParticipant: IParticipant = {
         ...participant,
         paid: !participant.paid
       }
@@ -41,7 +41,7 @@ export default function Details() {
     }
   )
 
-  function handlePaidEvent(participant: Participant) {
+  function handlePaidEvent(participant: IParticipant) {
     console.log("Paguei", participant, idSchedule)
     updateStatusParticipant(participant)
   }

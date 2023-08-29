@@ -1,10 +1,10 @@
-import { ScheduleProps } from "@/app/(pages)/schedule/page"
-import { Money, People } from "../../../../../components/svgs"
+import { Money, People } from "@/components/svgs"
 import Link from "next/link"
 import { formatCurrency, formatDateToDDMM } from "@/utils/formatter"
+import { ISchedule } from "../../types"
 
 interface CardProps {
-  schedule: ScheduleProps
+  schedule: ISchedule
 }
 
 export function Card({ schedule }: CardProps) {
