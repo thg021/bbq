@@ -56,7 +56,7 @@ export function Modal({ user }: ModalProps) {
     resolver: zodResolver(createEventFormSchema)
   })
 
-  const { fields, append } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     name: "participants",
     control
   })
@@ -74,6 +74,12 @@ export function Modal({ user }: ModalProps) {
     reset()
   }
 
+  function onCancel() {
+    reset()
+    remove()
+    setOpen(false)
+  }
+
   return (
     <>
       <Dialog.Root onOpenChange={setOpen} open={open}>
@@ -85,7 +91,7 @@ export function Modal({ user }: ModalProps) {
         </Dialog.Trigger>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/50" />
-          <Dialog.Content className=" absolute w-full h-screen md:w-2/3 overflow-y-scroll md:h-2/3 top-0 left-0 md:top-1/2 md:-translate-x-1/2 md:left-1/2 md:-translate-y-1/2 rounded-md bg-white p-8 text-gray-900 shadow-md">
+          <Dialog.Content className=" absolute w-full h-screen md:w-2/3 lg:w-1/2 overflow-y-scroll md:h-2/3 top-0 left-0 md:top-1/2 md:-translate-x-1/2 md:left-1/2 md:-translate-y-1/2 rounded-md bg-white p-8 text-gray-900 shadow-md">
             <div className="flex w-full justify-between items-center">
               <h2 className="font-bold text-xl">Adicionar novo encontro:</h2>
               <Dialog.Close className="text-gray-400 hover:text-gray-500">
@@ -130,15 +136,18 @@ export function Modal({ user }: ModalProps) {
 
               {fields.map((field, index) => {
                 return (
-                  <div key={field.id} className="my-2 flex items-center gap-4 ">
-                    <div className="flex-1">
+                  <div
+                    key={field.id}
+                    className="my-2 grid grid-cols-[__1fr_auto_100px] lg:grid-cols-[__1fr__1fr_100px] grid-rows-2  lg:grid-rows-1  items-center justify-center gap-4 content-stretch"
+                  >
+                    <div className="col-span-2">
                       <Input
                         className="border border-slate-200"
                         placeholder="Nome do participante"
                         {...register(`participants.${index}.participant`)}
                       />
                     </div>
-                    <div>
+                    <div className="">
                       <Input
                         className="border border-slate-200"
                         placeholder="Valor de contribuição"
@@ -152,7 +161,7 @@ export function Modal({ user }: ModalProps) {
                       render={({ field: { onChange, value, ref } }) => {
                         return (
                           <Switch.Root
-                            className="ml-6 w-12 h-7 rounded-full bg-slate-200 shadow-lg focus:shadow-xl data-[state='checked']:bg-[--background-rgb]"
+                            className="md:col-start-4  justify-self-end ml-6 w-12 h-7  rounded-full bg-slate-200 shadow-lg focus:shadow-xl data-[state='checked']:bg-[--background-rgb]"
                             id={`participants.${index}.drink`}
                             checked={value}
                             onCheckedChange={onChange}
@@ -172,7 +181,11 @@ export function Modal({ user }: ModalProps) {
               <div className="self-end flex gap-4 mt-4">
                 <Button variant="primary" text="Salvar" type="submit" />
                 <Dialog.Close asChild>
-                  <Button variant="secondary" text="Cancelar" />
+                  <Button
+                    variant="secondary"
+                    text="Cancelar"
+                    onClick={onCancel}
+                  />
                 </Dialog.Close>
               </div>
             </form>

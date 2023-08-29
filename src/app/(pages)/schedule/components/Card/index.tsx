@@ -1,7 +1,7 @@
 import { Money, People } from "@/components/svgs"
 import Link from "next/link"
 import { formatCurrency, formatDateToDDMM } from "@/utils/formatter"
-import { ISchedule } from "../../types"
+import { ISchedule } from "@/services/schedule"
 
 interface CardProps {
   schedule: ISchedule
