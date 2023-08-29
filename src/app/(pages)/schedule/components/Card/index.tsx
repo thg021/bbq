@@ -1,5 +1,5 @@
 import { ScheduleProps } from "@/app/(pages)/schedule/page"
-import { Money, People } from "../svgs"
+import { Money, People } from "../../../../../components/svgs"
 import Link from "next/link"
 import { formatCurrency, formatDateToDDMM } from "@/utils/formatter"
 
