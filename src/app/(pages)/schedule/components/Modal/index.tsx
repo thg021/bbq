@@ -1,37 +1,22 @@
 "use client"
-import { Input } from "@/components/Input"
-import { Bbq } from "@/components/svgs"
-import { api } from "@/lib/axios"
-import { queryClient } from "@/lib/react-query"
+import { useState } from "react"
+import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "@tanstack/react-query"
+import { Controller, useFieldArray, useForm } from "react-hook-form"
+
 import * as Dialog from "@radix-ui/react-dialog"
 import * as Switch from "@radix-ui/react-switch"
-import { useMutation } from "@tanstack/react-query"
-import { useState } from "react"
-import { Controller, useFieldArray, useForm } from "react-hook-form"
-import { z } from "zod"
+
+import { api } from "@/lib/axios"
+import { queryClient } from "@/lib/react-query"
+
+import { Input } from "@/components/Input"
+import { Bbq } from "@/components/svgs"
+import { Button } from "@/components/Button"
 export interface ParticipantProps {
   name: string
   drink: boolean
-}
-
-export interface Participant {
-  id: string
-  name: string
-  drink: boolean
-  contribution_value: number
-  paid: boolean
-  created_at: string
-}
-
-export interface ScheduleProps {
-  id: string
-  title: string
-  event_date: string
-  created_at: string
-  user_id: string
-  totalContribution: number
-  participants: Participant[]
 }
 
 const createEventFormSchema = z.object({
@@ -133,15 +118,12 @@ export function Modal({ user }: ModalProps) {
               {...register("date")}
             />
             <div className="my-8 flex items-center justify-between">
-              <h2 className="font-bold text-xl my-4">Adicionar participante</h2>
-
-              <button
+              <h2 className="font-bold text-xl my-4">Participantes</h2>
+              <Button
+                variant="primary"
+                text="Adicionar"
                 onClick={onAddNewParticipant}
-                className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-black font-bold hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
-              >
-                <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-                <span className="relative">Adicionar novo</span>
-              </button>
+              />
             </div>
             {fields.length > 0 && (
               <span className="font-bold text-right">bebida alcoolica?</span>
@@ -190,18 +172,9 @@ export function Modal({ user }: ModalProps) {
             })}
 
             <div className="self-end flex gap-4 mt-4">
-              <button
-                type="submit"
-                className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-black font-bold hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
-              >
-                <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-                <span className="relative">Salvar</span>
-              </button>
+              <Button variant="primary" text="Salvar" type="submit" />
               <Dialog.Close asChild>
-                <button className="relative rounded px-5 py-2.5 overflow-hidden group bg-white text-black font-bold hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300">
-                  <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
-                  <span className="relative">Cancelar</span>
-                </button>
+                <Button variant="secondary" text="Cancelar" />
               </Dialog.Close>
             </div>
           </form>
