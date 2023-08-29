@@ -1,29 +1,13 @@
 import { ScheduleProps } from "@/app/(pages)/schedule/page"
 import { Money, People } from "../svgs"
 import Link from "next/link"
+import { formatCurrency, formatDateToDDMM } from "@/utils/formatter"
 
 interface CardProps {
   schedule: ScheduleProps
 }
 
 export function Card({ schedule }: CardProps) {
-  function formatDateToDDMM(dateString: string): string {
-    const date = new Date(dateString)
-    const formatter = new Intl.DateTimeFormat("pt-BR", {
-      day: "2-digit",
-      month: "2-digit"
-    })
-    return formatter.format(date)
-  }
-
-  function numberFormatter(value: number) {
-    const numberFormatter = new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL"
-    })
-    return numberFormatter.format(value)
-  }
-
   return (
     <Link
       href={`/schedule/${schedule.id}`}
@@ -42,7 +26,7 @@ export function Card({ schedule }: CardProps) {
 
         <div className="flex justify-center items-center gap-3">
           <Money className="group-hover:fill-black transition duration-500" />
-          <span>{numberFormatter(schedule.totalContribution)}</span>
+          <span>{formatCurrency(schedule.totalContribution)}</span>
         </div>
       </footer>
     </Link>
