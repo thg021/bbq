@@ -19,6 +19,7 @@ export async function GET(req: Request) {
   }
 
   const schedulesData = await prisma.schedule.findMany({
+    orderBy: [{ event_date: "desc" }],
     where: {
       user_id: user.id
     },

@@ -92,7 +92,7 @@ export function FormAddParticipant() {
               render={({ field: { onChange, value, ref } }) => {
                 return (
                   <Switch.Root
-                    className="ml-6 w-12 h-7 rounded-full bg-slate-200 shadow-lg focus:shadow-xl data-[state='checked']:bg-yellow-400"
+                    className="ml-6 w-12 h-7 rounded-full bg-slate-200 shadow-lg focus:shadow-xl data-[state='checked']:bg-[--background-rgb]"
                     id={`participants.${index}.drink`}
                     checked={value}
                     onCheckedChange={onChange}

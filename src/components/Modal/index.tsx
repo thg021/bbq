@@ -1,13 +1,13 @@
 import * as Dialog from "@radix-ui/react-dialog"
-import { ReactNode, useState } from "react"
+import { ReactNode } from "react"
 import { Input } from "../Input"
 import { Controller, useForm } from "react-hook-form"
 import * as Switch from "@radix-ui/react-switch"
-import { ParticipantProps } from "@/app/(pages)/schedule/page"
+import { IParticipant } from "@/services/participant"
 
 interface ModalProps {
   children: ReactNode
-  participants: ParticipantProps[]
+  participants: IParticipant[]
   onAddParticipant: () => void
   onAddEvent: () => void
 }
@@ -25,7 +25,7 @@ export default function Modal({
       <Dialog.Trigger asChild>{children}</Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50" />
-        <Dialog.Content className="fixed w-1/2 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md bg-white p-8 text-gray-900 shadow-md">
+        <Dialog.Content className="border border-red border-8 fixed w-1/2 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md bg-white p-8 text-gray-900 shadow-md overflow-auto">
           <div className="flex w-full justify-between items-center">
             <h2 className="font-bold text-xl">Adicionar novo encontro:</h2>
             <Dialog.Close className="text-gray-400 hover:text-gray-500">
@@ -68,7 +68,7 @@ export default function Modal({
                         Bebida Alcoolica
                       </label>
                       <Switch.Root
-                        className="w-12 h-7 rounded-full bg-slate-200 shadow-lg focus:shadow-xl data-[state='checked']:bg-yellow-400"
+                        className="w-12 h-7 rounded-full bg-slate-200 shadow-lg focus:shadow-xl data-[state='checked']:bg-[--background-rgb]"
                         id="drink"
                         checked={value}
                         onCheckedChange={onChange}
@@ -86,7 +86,7 @@ export default function Modal({
 
               <button
                 onClick={onAddParticipant}
-                className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 buttontext-black font-bold hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
+                className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-[--background-rgb] buttontext-black font-bold hover:ring-2 hover:ring-offset-2 hover:ring-[--background-rgb] transition-all ease-out duration-300"
               >
                 <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
                 <span className="relative">Adicionar</span>
@@ -110,7 +110,7 @@ export default function Modal({
                   return (
                     <tr
                       key={index}
-                      className="bg-white border-b dark:bg-gray-800 border-yellow-400"
+                      className="bg-white border-b dark:bg-gray-800 border-[--background-rgb]"
                     >
                       <td
                         scope="row"
@@ -131,13 +131,13 @@ export default function Modal({
             <div className="self-end flex gap-6">
               <button
                 onClick={onAddEvent}
-                className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-400 text-black font-bold hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300"
+                className="relative rounded px-5 py-2.5 overflow-hidden group bg-yellow-500 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-[--background-rgb] text-black font-bold hover:ring-2 hover:ring-offset-2 hover:ring-[--background-rgb] transition-all ease-out duration-300"
               >
                 <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
                 <span className="relative">Salvar</span>
               </button>
               <Dialog.Close asChild>
-                <button className="relative rounded px-5 py-2.5 overflow-hidden group bg-white text-black font-bold hover:ring-2 hover:ring-offset-2 hover:ring-yellow-400 transition-all ease-out duration-300">
+                <button className="relative rounded px-5 py-2.5 overflow-hidden group bg-white text-black font-bold hover:ring-2 hover:ring-offset-2 hover:ring-[--background-rgb] transition-all ease-out duration-300">
                   <span className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"></span>
                   <span className="relative">Cancelar</span>
                 </button>

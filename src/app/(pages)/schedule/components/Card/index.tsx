@@ -11,7 +11,7 @@ export function Card({ schedule }: CardProps) {
   return (
     <Link
       href={`/schedule/${schedule.id}`}
-      className="w-full flex flex-col bg-white shadow-md p-6 h-48 cursor-pointer hover:bg-yellow-400 group transform transition duration-500 hover:scale-105"
+      className="w-full flex flex-col bg-white shadow-md p-6 h-48 cursor-pointer hover:bg-[--background-rgb] group transform transition duration-500 hover:scale-105"
     >
       <header className="font-extrabold text-3xl">
         {formatDateToDDMM(schedule.event_date)}

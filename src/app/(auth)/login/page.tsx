@@ -48,7 +48,7 @@ export default function Login() {
   }
 
   return (
-    <main className="w-full h-screen flex flex-col bg-[url('/img/hero.svg')] bg-yellow-400">
+    <main className="w-full h-screen flex flex-col bg-[url('/img/hero.svg')] bg-[--background-rgb]">
       <header className="h-52 flex justify-center items-center">
         <h1 className="text-3xl font-extrabold text-zinc-900">
           Agenda de Churras

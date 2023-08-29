@@ -8,7 +8,7 @@ import * as Dialog from "@radix-ui/react-dialog"
 import * as Switch from "@radix-ui/react-switch"
 
 import { Input } from "@/components/Input"
-import { Bbq } from "@/components/svgs"
+import { Bbq, Close } from "@/components/svgs"
 import { Button } from "@/components/Button"
 import { Alert } from "@/components/Alert"
 import { useCreateSchedule } from "@/hooks/useCreateSchedule"
@@ -78,35 +78,42 @@ export function Modal({ user }: ModalProps) {
     <>
       <Dialog.Root onOpenChange={setOpen} open={open}>
         <Dialog.Trigger asChild>
-          <div className="flex flex-col justify-center items-center gap-2 bg-slate-100 shadow-md p-6 h-48 cursor-pointer hover:bg-yellow-400 group transform transition duration-500 hover:scale-105">
+          <div className="flex flex-col justify-center items-center gap-2 bg-slate-100 shadow-md p-6 h-48 cursor-pointer hover:bg-[--background-rgb] group transform transition duration-500 hover:scale-105">
             <Bbq />
             <h1 className="font-bold text-xl">Adicionar Churras</h1>
           </div>
         </Dialog.Trigger>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/50" />
-          <Dialog.Content className="fixed w-full sm:h-screen md:h-auto lg:w-1/2 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-md bg-white p-8 text-gray-900 shadow-md">
+          <Dialog.Content className=" absolute w-full h-screen md:w-2/3 overflow-y-scroll md:h-2/3 top-0 left-0 md:top-1/2 md:-translate-x-1/2 md:left-1/2 md:-translate-y-1/2 rounded-md bg-white p-8 text-gray-900 shadow-md">
             <div className="flex w-full justify-between items-center">
               <h2 className="font-bold text-xl">Adicionar novo encontro:</h2>
               <Dialog.Close className="text-gray-400 hover:text-gray-500">
-                X
+                <Close className="h-6 fill-slate-400 hover:fill-[--background-rgb]" />
               </Dialog.Close>
             </div>
 
             <form
               onSubmit={handleSubmit(handleAddEvent)}
-              className="flex flex-col mt-8"
+              className="flex flex-col mt-8 gap-2 overflow-x-auto h-"
             >
               <Input
-                label="Titulo"
+                label="Evento"
+                placeholder="Nome do evento"
                 className="border border-slate-200"
                 {...register("title")}
               />
-              {errors.title && <span>{errors.title.message}</span>}
+              {errors.title && (
+                <span className="text-sm text-red-600">
+                  {errors.title.message}
+                </span>
+              )}
               <Input
                 type="date"
                 label="Data do evento"
+                placeholder="Data do evento"
                 className="border border-slate-200"
+                pattern="[0-9]{2}-[0-9]{4}"
                 {...register("date")}
               />
               <div className="my-8 flex items-center justify-between">
@@ -123,10 +130,7 @@ export function Modal({ user }: ModalProps) {
 
               {fields.map((field, index) => {
                 return (
-                  <div
-                    key={field.id}
-                    className="my-2 flex items-center justify-between gap-4"
-                  >
+                  <div key={field.id} className="my-2 flex items-center gap-4 ">
                     <div className="flex-1">
                       <Input
                         className="border border-slate-200"
@@ -148,7 +152,7 @@ export function Modal({ user }: ModalProps) {
                       render={({ field: { onChange, value, ref } }) => {
                         return (
                           <Switch.Root
-                            className="ml-6 w-12 h-7 rounded-full bg-slate-200 shadow-lg focus:shadow-xl data-[state='checked']:bg-yellow-400"
+                            className="ml-6 w-12 h-7 rounded-full bg-slate-200 shadow-lg focus:shadow-xl data-[state='checked']:bg-[--background-rgb]"
                             id={`participants.${index}.drink`}
                             checked={value}
                             onCheckedChange={onChange}
