@@ -1,18 +1,16 @@
 "use client"
 import { useParams, useRouter } from "next/navigation"
-import { useMutation, useQuery } from "@tanstack/react-query"
-import { queryClient } from "@/lib/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { ISchedule, IParticipant } from "../types"
 import { Header } from "./components/Header"
 import { User } from "./components/User"
 import { FormAddParticipant } from "./components/FormAddParticipant"
 import Link from "next/link"
 import { Button } from "@/components/Button"
-import { deleteSchedule, getSchedule } from "@/services/schedule"
-import {
-  deleteParticipant,
-  updatePaymentParticipant
-} from "@/services/participant"
+import { getSchedule } from "@/services/schedule"
+import { useUpdatePaymentParticipant } from "@/hooks/useUpdatePaymentParticipant"
+import { useDeleteParticipant } from "@/hooks/useDeleteParticipant"
+import { useDeleteSchedule } from "@/hooks/useDeleteSchedule"
 
 export default function Details() {
   const { id } = useParams()
@@ -27,44 +25,27 @@ export default function Details() {
     }
   )
 
-  const { mutateAsync: updateStatusParticipant } = useMutation(
-    updatePaymentParticipant,
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["schedules"])
-        queryClient.invalidateQueries(["schedule", scheduleId])
-      }
-    }
-  )
-
+  const { mutateAsync: onUpdatePaymentParticipant } =
+    useUpdatePaymentParticipant(scheduleId)
   function handlePayment(participant: IParticipant) {
     const updataPaymentProps = {
       ...participant,
       scheduleId: scheduleId
     }
-    updateStatusParticipant(updataPaymentProps)
+    onUpdatePaymentParticipant(updataPaymentProps)
   }
 
-  const { mutateAsync: onDeleteParticipant } = useMutation(deleteParticipant, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(["schedules"])
-      queryClient.invalidateQueries(["schedule", scheduleId])
-    }
-  })
+  const { mutateAsync: onDeleteParticipant } = useDeleteParticipant(scheduleId)
 
   function handleDeleteParticipant(participantId: string) {
     onDeleteParticipant({ participantId, scheduleId })
   }
 
-  const { mutateAsync: onDeleteSchedule } = useMutation(deleteSchedule, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(["schedules"])
-      router.push("/schedule")
-    }
-  })
+  const { mutateAsync: onDeleteSchedule } = useDeleteSchedule()
 
   function handleDeleteSchedule() {
     onDeleteSchedule(scheduleId)
+    router.push("/schedule")
   }
 
   return (

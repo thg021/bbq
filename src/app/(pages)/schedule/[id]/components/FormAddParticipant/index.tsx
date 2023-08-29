@@ -4,10 +4,8 @@ import { Button } from "@/components/Button"
 import { z } from "zod"
 import { Input } from "@/components/Input"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query"
-import { queryClient } from "@/lib/react-query"
 import { useParams } from "next/navigation"
-import { createParticipant } from "@/services/participant"
+import { useAddParticipant } from "@/hooks/useAddParticipant"
 
 const createEventFormSchema = z.object({
   participants: z.array(
@@ -39,14 +37,7 @@ export function FormAddParticipant() {
     control
   })
 
-  const { mutateAsync: addNewParticipant } = useMutation(createParticipant, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(["schedules"])
-      queryClient.invalidateQueries(["schedule", scheduleId])
-      reset()
-      remove()
-    }
-  })
+  const { mutateAsync: onAddParticipant } = useAddParticipant(scheduleId)
 
   function onAddInputNewParticipant() {
     append({ name: "", drink: false, contribution_value: 0 })
@@ -54,7 +45,9 @@ export function FormAddParticipant() {
 
   function handleAddParticipant(data: CreateEventFormSchema) {
     const participants = { ...data, scheduleId }
-    addNewParticipant(participants)
+    onAddParticipant(participants)
+    reset()
+    remove()
   }
 
   function handleCancel() {

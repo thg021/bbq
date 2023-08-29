@@ -2,19 +2,16 @@
 import { useState } from "react"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "@tanstack/react-query"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 
 import * as Dialog from "@radix-ui/react-dialog"
 import * as Switch from "@radix-ui/react-switch"
 
-import { queryClient } from "@/lib/react-query"
-
 import { Input } from "@/components/Input"
 import { Bbq } from "@/components/svgs"
 import { Button } from "@/components/Button"
 import { Alert } from "@/components/Alert"
-import { createSchedule } from "@/services/schedule"
+import { useCreateSchedule } from "@/hooks/useCreateSchedule"
 export interface ParticipantProps {
   name: string
   drink: boolean
@@ -68,18 +65,13 @@ export function Modal({ user }: ModalProps) {
     append({ participant: "", drink: false, contribution_value: 0 })
   }
 
-  const { mutateAsync } = useMutation(createSchedule, {
-    onSuccess: () => {
-      setOpenAlert(true)
-      queryClient.invalidateQueries(["schedules"])
-      setOpen(false)
-      reset()
-    }
-  })
+  const { mutateAsync: onCreateSchedule } = useCreateSchedule()
 
   function handleAddEvent(data: CreateEventFormSchema) {
     const email = user!.email
-    mutateAsync({ ...data, email })
+    onCreateSchedule({ ...data, email })
+    setOpen(false)
+    reset()
   }
 
   return (

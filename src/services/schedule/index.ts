@@ -23,7 +23,7 @@ export interface ISchedule {
   participants: IParticipant[]
 }
 
-interface IScheduleResponse {
+export interface IScheduleResponse {
   schedules: ISchedule[]
 }
 
