@@ -6,8 +6,8 @@ import { Input } from "@/components/Input"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import { queryClient } from "@/lib/react-query"
-import { api } from "@/lib/axios"
 import { useParams } from "next/navigation"
+import { createParticipant } from "@/services/participant"
 
 const createEventFormSchema = z.object({
   participants: z.array(
@@ -26,12 +26,9 @@ const createEventFormSchema = z.object({
 
 type CreateEventFormSchema = z.infer<typeof createEventFormSchema>
 
-type IParticipantRequest = CreateEventFormSchema & {
-  idSchedule: string
-}
 export function FormAddParticipant() {
   const { id } = useParams()
-  const idSchedule = String(id)
+  const scheduleId = String(id)
   const { register, control, handleSubmit, reset } =
     useForm<CreateEventFormSchema>({
       resolver: zodResolver(createEventFormSchema)
@@ -42,26 +39,21 @@ export function FormAddParticipant() {
     control
   })
 
-  const { mutateAsync: addNewParticipant } = useMutation(
-    async (participant: IParticipantRequest) => {
-      await api.post(`/schedules/${idSchedule}/participants`, participant)
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["schedules"])
-        queryClient.invalidateQueries(["schedule", idSchedule])
-        reset()
-        remove()
-      }
+  const { mutateAsync: addNewParticipant } = useMutation(createParticipant, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(["schedules"])
+      queryClient.invalidateQueries(["schedule", scheduleId])
+      reset()
+      remove()
     }
-  )
+  })
 
   function onAddInputNewParticipant() {
     append({ name: "", drink: false, contribution_value: 0 })
   }
 
   function handleAddParticipant(data: CreateEventFormSchema) {
-    const participants = { ...data, idSchedule }
+    const participants = { ...data, scheduleId }
     addNewParticipant(participants)
   }
 

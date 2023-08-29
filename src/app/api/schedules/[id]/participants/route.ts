@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma"
 import { NextResponse as res } from "next/server"
 
 export async function POST(req: Request) {
-  const { idSchedule, participants } = await req.json()
+  const { scheduleId, participants } = await req.json()
 
   // body.map(
   //   (participant: {
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
           name: participant.name,
           drink: participant.drink,
           contribution_value: participant.contribution_value,
-          schedule_id: idSchedule
+          schedule_id: scheduleId
         }
       })
     )

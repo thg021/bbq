@@ -5,6 +5,7 @@ import { Footer } from "@/components/Footer"
 import { Header } from "@/components/Header"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import { ToastProvider } from "@radix-ui/react-toast"
 
 interface LayoutPageProps {
   children: ReactNode
@@ -28,11 +29,15 @@ export default function LayoutAuthPage({ children }: LayoutPageProps) {
 
   return (
     <>
-      <Header />
-      <main className="w-full flex-1 flex justify-start items-center flex-col bg-slate-100">
-        <div className="w-full lg:w-[64rem] flex-1 mt-[-3rem]">{children}</div>
-      </main>
-      <Footer />
+      <ToastProvider>
+        <Header />
+        <main className="w-full flex-1 flex justify-start items-center flex-col bg-slate-100">
+          <div className="w-full lg:w-[64rem] flex-1 mt-[-3rem]">
+            {children}
+          </div>
+        </main>
+        <Footer />
+      </ToastProvider>
     </>
   )
 }

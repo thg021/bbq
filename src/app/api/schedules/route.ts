@@ -74,7 +74,7 @@ export async function POST(req: Request) {
     })
 
     if (!user) {
-      return res.json({ message: "user not found" }, { status: 409 })
+      return res.json({ message: "Acesso não autorizado." }, { status: 409 })
     }
 
     await prisma.schedule.create({

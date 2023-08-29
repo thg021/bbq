@@ -1,7 +1,6 @@
 "use client"
 import { useParams, useRouter } from "next/navigation"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { api } from "@/lib/axios"
 import { queryClient } from "@/lib/react-query"
 import { ISchedule, IParticipant } from "../types"
 import { Header } from "./components/Header"
@@ -9,75 +8,63 @@ import { User } from "./components/User"
 import { FormAddParticipant } from "./components/FormAddParticipant"
 import Link from "next/link"
 import { Button } from "@/components/Button"
+import { deleteSchedule, getSchedule } from "@/services/schedule"
+import {
+  deleteParticipant,
+  updatePaymentParticipant
+} from "@/services/participant"
 
 export default function Details() {
-  const { id: idSchedule } = useParams()
+  const { id } = useParams()
+  const scheduleId = String(id)
   const router = useRouter()
-
   const { data: schedule } = useQuery<ISchedule>(
-    ["schedule", idSchedule],
+    ["schedule", scheduleId],
     async () => {
-      const { data } = await api.get(`/schedules/${idSchedule}`, {
-        params: { idSchedule }
-      })
+      const { data } = await getSchedule(String(scheduleId))
 
       return data ?? {}
     }
   )
 
   const { mutateAsync: updateStatusParticipant } = useMutation(
-    async (participant: IParticipant) => {
-      const updatedParticipant: IParticipant = {
-        ...participant,
-        paid: !participant.paid
-      }
-      await api.put(
-        `/schedules/${idSchedule}/participants/${participant.id}`,
-        updatedParticipant
-      )
-    },
+    updatePaymentParticipant,
     {
       onSuccess: () => {
         queryClient.invalidateQueries(["schedules"])
-        queryClient.invalidateQueries(["schedule", idSchedule])
+        queryClient.invalidateQueries(["schedule", scheduleId])
       }
     }
   )
 
   function handlePayment(participant: IParticipant) {
-    updateStatusParticipant(participant)
+    const updataPaymentProps = {
+      ...participant,
+      scheduleId: scheduleId
+    }
+    updateStatusParticipant(updataPaymentProps)
   }
 
-  const { mutateAsync: deleteParticipant } = useMutation(
-    async (participantId: string) => {
-      await api.delete(`/schedules/${idSchedule}/participants/${participantId}`)
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["schedules"])
-        queryClient.invalidateQueries(["schedule", idSchedule])
-      }
+  const { mutateAsync: onDeleteParticipant } = useMutation(deleteParticipant, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(["schedules"])
+      queryClient.invalidateQueries(["schedule", scheduleId])
     }
-  )
+  })
 
   function handleDeleteParticipant(participantId: string) {
-    deleteParticipant(participantId)
+    onDeleteParticipant({ participantId, scheduleId })
   }
 
-  const { mutateAsync: deleteSchedule } = useMutation(
-    async () => {
-      await api.delete(`/schedules/${idSchedule}`)
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["schedules"])
-        router.push("/schedule")
-      }
+  const { mutateAsync: onDeleteSchedule } = useMutation(deleteSchedule, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(["schedules"])
+      router.push("/schedule")
     }
-  )
+  })
 
   function handleDeleteSchedule() {
-    deleteSchedule()
+    onDeleteSchedule(scheduleId)
   }
 
   return (
