@@ -1,5 +1,5 @@
 "use client"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { api } from "@/lib/axios"
 import { queryClient } from "@/lib/react-query"
@@ -8,9 +8,11 @@ import { Header } from "./components/Header"
 import { User } from "./components/User"
 import { FormAddParticipant } from "./components/FormAddParticipant"
 import Link from "next/link"
+import { Button } from "@/components/Button"
 
 export default function Details() {
   const { id: idSchedule } = useParams()
+  const router = useRouter()
 
   const { data: schedule } = useQuery<ISchedule>(
     ["schedule", idSchedule],
@@ -62,11 +64,31 @@ export default function Details() {
     deleteParticipant(participantId)
   }
 
+  const { mutateAsync: deleteSchedule } = useMutation(
+    async () => {
+      await api.delete(`/schedules/${idSchedule}`)
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["schedules"])
+        router.push("/schedule")
+      }
+    }
+  )
+
+  function handleDeleteSchedule() {
+    deleteSchedule()
+  }
+
   return (
     <section className="flex flex-col bg-white shadow-md p-6 mx-4">
       <div className="flex justify-between items-center mb-8">
         <Link href="/schedule">voltar</Link>
-        <span>deletar</span>
+        <Button
+          variant="secondary"
+          text="Deletar evento"
+          onClick={handleDeleteSchedule}
+        />
       </div>
       {!schedule ? (
         <div>nao tem nada ainda</div>

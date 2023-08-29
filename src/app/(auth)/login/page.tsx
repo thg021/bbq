@@ -32,6 +32,7 @@ export default function Login() {
       signIn("Credentials", { ...data, redirect: false }).then((data) => {
         if (!data?.error) {
           router.push("/schedule")
+          return
         }
 
         reset()

@@ -34,3 +34,17 @@ export async function GET(
 
   return res.json(schedules)
 }
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  console.log(params)
+  await prisma.schedule.delete({
+    where: {
+      id: params.id
+    }
+  })
+
+  return res.json({ message: "ok" })
+}

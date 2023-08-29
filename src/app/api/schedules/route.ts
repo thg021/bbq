@@ -59,7 +59,7 @@ export async function POST(req: Request) {
       participants: z.array(
         z.object({
           participant: z.string().nonempty(),
-          contribuition_value: z.string(),
+          contribution_value: z.number(),
           drink: z.boolean()
         })
       )
@@ -86,7 +86,7 @@ export async function POST(req: Request) {
           create: participants.map((participant) => ({
             name: participant.participant,
             drink: participant.drink,
-            contribution_value: Number(participant.contribuition_value)
+            contribution_value: participant.contribution_value
           }))
         }
       }
